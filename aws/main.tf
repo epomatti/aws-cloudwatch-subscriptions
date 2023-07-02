@@ -7,7 +7,13 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-east-2"
+  region = var.aws_region
+}
+
+data "aws_caller_identity" "current" {}
+
+locals {
+  aws_account_id = data.aws_caller_identity.current.account_id
 }
 
 ### VPC ### 
@@ -45,7 +51,7 @@ module "sg" {
   ]
 }
 
-### IAM ###
+### EC2 IAM ###
 
 resource "aws_iam_role" "main" {
   name = "prod-ec2-role"
@@ -114,3 +120,59 @@ resource "aws_cloudwatch_log_stream" "main" {
 #   destination_arn = aws_kinesis_stream.test_logstream.arn
 #   distribution    = "Random"
 # }
+
+### Kinesis ###
+
+resource "aws_iam_role" "prod_cloudwatch_kinesis_role" {
+  name = "prod-cloudwatch-kinesis-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "logs.amazonaws.com"
+        }
+      },
+    ]
+  })
+}
+
+resource "aws_iam_policy" "kinesis_cwl" {
+  name = "prod-sub-kinesis-cwl"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "kinesis:PutRecord",
+        ]
+        Effect   = "Allow"
+        Resource = "arn:aws:kinesis:${var.aws_region}:${local.aws_account_id}:stream/RootAccess"
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "prod_cwl_kinesis" {
+  role       = aws_iam_role.prod_cloudwatch_kinesis_role.name
+  policy_arn = aws_iam_policy.kinesis_cwl.arn
+}
+
+resource "aws_kinesis_stream" "test_stream" {
+  name             = "prod-cloudwatch-subscription"
+  retention_period = 48
+
+  shard_level_metrics = [
+    "IncomingBytes",
+    "OutgoingBytes",
+  ]
+
+  stream_mode_details {
+    stream_mode = "ON_DEMAND"
+  }
+}
