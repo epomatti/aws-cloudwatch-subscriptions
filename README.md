@@ -1,5 +1,9 @@
 # AWS CloudWatch Logs Subscriptions
 
+CloudWatch Logs subscription filters with Kinesis and several destinations.
+
+<img src=".assets/aws.png" width=800 />
+
 Create the resources:
 
 ```
