@@ -284,33 +284,33 @@ resource "aws_opensearchserverless_access_policy" "test" {
   ])
 }
 
-resource "aws_kinesis_firehose_delivery_stream" "opensearch_serverless" {
-  name        = "prod-splunk"
-  destination = "splunk"
+# resource "aws_kinesis_firehose_delivery_stream" "opensearch_serverless" {
+#   name        = "prod-splunk"
+#   destination = "splunk"
 
-  kinesis_source_configuration {
-    kinesis_stream_arn = aws_kinesis_stream.prod.arn
-    role_arn           = aws_iam_role.firehose.arn
-  }
+#   kinesis_source_configuration {
+#     kinesis_stream_arn = aws_kinesis_stream.prod.arn
+#     role_arn           = aws_iam_role.firehose.arn
+#   }
 
-  opensearch_configuration {
+#   opensearch_configuration {
     
-  }
+#   }
 
-  # opensearch_configuration {
-  #   domain_arn = aws_opensearchserverless_collection.prod_logs.arn
-  #   role_arn   = aws_iam_role.firehose.arn
-  #   index_name = "test"
+#   # opensearch_configuration {
+#   #   domain_arn = aws_opensearchserverless_collection.prod_logs.arn
+#   #   role_arn   = aws_iam_role.firehose.arn
+#   #   index_name = "test"
 
-  #   s3_configuration {
-  #     role_arn   = aws_iam_role.firehose.arn
-  #     bucket_arn = aws_s3_bucket.bucket.arn
-  #   }
+#   #   s3_configuration {
+#   #     role_arn   = aws_iam_role.firehose.arn
+#   #     bucket_arn = aws_s3_bucket.bucket.arn
+#   #   }
 
-  #   vpc_config {
-  #     subnet_ids         = [aws_subnet.first.id, aws_subnet.second.id]
-  #     security_group_ids = [aws_security_group.first.id]
-  #     role_arn           = aws_iam_role.firehose.arn
-  #   }
-  # }
-}
+#   #   vpc_config {
+#   #     subnet_ids         = [aws_subnet.first.id, aws_subnet.second.id]
+#   #     security_group_ids = [aws_security_group.first.id]
+#   #     role_arn           = aws_iam_role.firehose.arn
+#   #   }
+#   # }
+# }
