@@ -180,3 +180,137 @@ resource "aws_kinesis_stream" "prod" {
     stream_mode = "ON_DEMAND"
   }
 }
+
+### Firehose to Splunk ###
+
+# resource "aws_kinesis_firehose_delivery_stream" "splunk" {
+#   name        = "prod-splunk"
+#   destination = "splunk"
+
+#   kinesis_source_configuration {
+#     kinesis_stream_arn = aws_kinesis_stream.prod.arn
+#     role_arn           = aws_iam_role.firehose.arn
+#   }
+
+#   splunk_configuration {
+#     hec_endpoint               = var.splunk_hec_endpoint
+#     hec_token                  = var.splunk_hec_token
+#     hec_acknowledgment_timeout = 600
+#     hec_endpoint_type          = "Event"
+#     # s3_backup_mode             = "FailedEventsOnly"
+
+#     # s3_configuration {
+#     #   role_arn           = aws_iam_role.firehose.arn
+#     #   bucket_arn         = aws_s3_bucket.bucket.arn
+#     #   buffering_size     = 10
+#     #   buffering_interval = 400
+#     #   compression_format = "GZIP"
+#     # }
+#   }
+# }
+
+# resource "aws_kinesis_stream_consumer" "firehose_splunk" {
+#   name       = "prod-firehose-splunk"
+#   stream_arn = aws_kinesis_stream.splunk.arn
+# }
+
+resource "aws_iam_role" "firehose" {
+  name = "prod-firehose-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowFirehose"
+        Effect = "Allow"
+        Action = "sts:AssumeRole"
+        Principal = {
+          Service = "firehose.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+
+### OpenSearch Serverless ###
+
+resource "aws_opensearchserverless_security_policy" "example" {
+  name = "aos-prod-logs-secpol"
+  type = "encryption"
+  policy = jsonencode({
+    "Rules" = [
+      {
+        "Resource" = [
+          "collection/prod-logs"
+        ],
+        "ResourceType" = "collection"
+      }
+    ],
+    "AWSOwnedKey" = true
+  })
+}
+
+resource "aws_opensearchserverless_collection" "prod_logs" {
+  name = "prod-logs"
+  depends_on = [
+    aws_opensearchserverless_security_policy.example,
+    aws_opensearchserverless_access_policy.test
+  ]
+}
+
+data "aws_partition" "current" {}
+
+resource "aws_opensearchserverless_access_policy" "test" {
+  name = "prod-access"
+  type = "data"
+  policy = jsonencode([
+    {
+      "Rules" : [
+        {
+          "ResourceType" : "collection",
+          "Resource" : [
+            "collection/prod-logs",
+          ],
+          "Permission" : [
+            "aoss:*",
+          ]
+        }
+      ],
+      "Principal" : [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/Evandro"
+      ]
+    }
+  ])
+}
+
+resource "aws_kinesis_firehose_delivery_stream" "opensearch_serverless" {
+  name        = "prod-splunk"
+  destination = "splunk"
+
+  kinesis_source_configuration {
+    kinesis_stream_arn = aws_kinesis_stream.prod.arn
+    role_arn           = aws_iam_role.firehose.arn
+  }
+
+  opensearch_configuration {
+    
+  }
+
+  # opensearch_configuration {
+  #   domain_arn = aws_opensearchserverless_collection.prod_logs.arn
+  #   role_arn   = aws_iam_role.firehose.arn
+  #   index_name = "test"
+
+  #   s3_configuration {
+  #     role_arn   = aws_iam_role.firehose.arn
+  #     bucket_arn = aws_s3_bucket.bucket.arn
+  #   }
+
+  #   vpc_config {
+  #     subnet_ids         = [aws_subnet.first.id, aws_subnet.second.id]
+  #     security_group_ids = [aws_security_group.first.id]
+  #     role_arn           = aws_iam_role.firehose.arn
+  #   }
+  # }
+}

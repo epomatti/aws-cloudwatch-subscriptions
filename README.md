@@ -7,6 +7,8 @@ terraform init
 terraform apply
 ```
 
+To complete the OpenSearch Serverless setup, connect and create a public Access Policy via the [Console](https://us-east-2.console.aws.amazon.com/aos/home?region=us-east-2#opensearch/collections/prod-logs). (This seems not available via Terraform as of now)
+
 Sent static sample logs to the stream:
 
 ```
