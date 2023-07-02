@@ -1,5 +1,9 @@
 # aws-cloudwatch-subscriptions
 
+From the Terraform module root do `init` and `apply`.
+
+From the logging app root, build it: `./build.sh`
+
 
 ## Local code
 
@@ -15,10 +19,4 @@ Testing the outputs:
 ```
 curl localhost:8080/info
 curl localhost:8080/err
-```
-
-Building the logging app:
-
-```
-env GOOS=linux GOARCH=amd64 go build -o main.so . 
 ```
