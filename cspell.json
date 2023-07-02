@@ -3,7 +3,10 @@
     "ignorePaths": [],
     "dictionaryDefinitions": [],
     "dictionaries": [],
-    "words": [],
+    "words": [
+        "GOARCH",
+        "linux"
+    ],
     "ignoreWords": [
         "github",
         "sirupsen",
