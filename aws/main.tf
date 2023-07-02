@@ -112,14 +112,16 @@ resource "aws_cloudwatch_log_stream" "main" {
   log_group_name = aws_cloudwatch_log_group.main.name
 }
 
-# resource "aws_cloudwatch_log_subscription_filter" "test_lambdafunction_logfilter" {
-#   name            = "test_lambdafunction_logfilter"
-#   role_arn        = aws_iam_role.iam_for_lambda.arn
-#   log_group_name  = "/aws/lambda/example_lambda_name"
-#   filter_pattern  = "logtype test"
-#   destination_arn = aws_kinesis_stream.test_logstream.arn
-#   distribution    = "Random"
-# }
+resource "aws_cloudwatch_log_subscription_filter" "prod_kinesis_logfilter" {
+  name            = "prod-kinesis"
+  role_arn        = aws_iam_role.prod_cloudwatch_kinesis_role.arn
+  log_group_name  = aws_cloudwatch_log_group.main.name
+  filter_pattern  = var.subscription_filter_pattern
+  destination_arn = aws_kinesis_stream.prod.arn
+  distribution    = "Random"
+
+  depends_on = [aws_iam_role_policy_attachment.prod_cwl_kinesis]
+}
 
 ### Kinesis ###
 
@@ -152,7 +154,7 @@ resource "aws_iam_policy" "kinesis_cwl" {
           "kinesis:PutRecord",
         ]
         Effect   = "Allow"
-        Resource = "arn:aws:kinesis:${var.aws_region}:${local.aws_account_id}:stream/RootAccess"
+        Resource = "${aws_kinesis_stream.prod.arn}"
       },
     ]
   })
@@ -163,7 +165,7 @@ resource "aws_iam_role_policy_attachment" "prod_cwl_kinesis" {
   policy_arn = aws_iam_policy.kinesis_cwl.arn
 }
 
-resource "aws_kinesis_stream" "test_stream" {
+resource "aws_kinesis_stream" "prod" {
   name             = "prod-cloudwatch-subscription"
   retention_period = 48
 

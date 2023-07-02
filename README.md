@@ -1,4 +1,4 @@
-# aws-cloudwatch-subscriptions
+# AWS CloudWatch Logs Subscriptions
 
 Create the resources:
 
@@ -18,6 +18,12 @@ Send dynamic timestamped logs:
 ```
 bash put-log-events.sh INFO
 bash put-log-events.sh ERROR
+```
+
+To subscribe only to specific logging patterns, edit the filter pattern:
+
+```terraform
+subscription_filter_pattern = ""
 ```
 
 ## Logging from EC2
