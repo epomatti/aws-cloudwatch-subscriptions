@@ -171,7 +171,9 @@ resource "aws_kinesis_stream" "prod" {
 
   shard_level_metrics = [
     "IncomingBytes",
+    "IncomingRecords",
     "OutgoingBytes",
+    "OutgoingRecords"
   ]
 
   stream_mode_details {
