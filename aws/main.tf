@@ -10,10 +10,6 @@ provider "aws" {
   region = "us-east-2"
 }
 
-resource "aws_cloudwatch_log_group" "main" {
-  name = "prod-logs"
-}
-
 ### VPC ### 
 
 module "vpc" {
@@ -89,11 +85,28 @@ resource "aws_iam_instance_profile" "main" {
 module "ec2_instance" {
   source        = "terraform-aws-modules/ec2-instance/aws"
   name          = "prod-instance"
-  instance_type = "t3.micro"
+  instance_type = "t2.micro"
   # key_name               = "prod-user"
-  user_data              = file("${path.module}/cloud-init.sh")
-  monitoring             = true
-  vpc_security_group_ids = [module.sg.security_group_id]
-  subnet_id              = module.vpc.public_subnets[0]
-  iam_instance_profile   = aws_iam_instance_profile.main.id
+  # user_data                   = file("${path.module}/cloud-init.sh")
+  ami                         = "ami-03f38e546e3dc59e1"
+  monitoring                  = true
+  associate_public_ip_address = true
+  vpc_security_group_ids      = [module.sg.security_group_id]
+  subnet_id                   = module.vpc.public_subnets[0]
+  iam_instance_profile        = aws_iam_instance_profile.main.id
 }
+
+### Cloud Watch ###
+
+resource "aws_cloudwatch_log_group" "main" {
+  name = "prod-logs"
+}
+
+# resource "aws_cloudwatch_log_subscription_filter" "test_lambdafunction_logfilter" {
+#   name            = "test_lambdafunction_logfilter"
+#   role_arn        = aws_iam_role.iam_for_lambda.arn
+#   log_group_name  = "/aws/lambda/example_lambda_name"
+#   filter_pattern  = "logtype test"
+#   destination_arn = aws_kinesis_stream.test_logstream.arn
+#   distribution    = "Random"
+# }
