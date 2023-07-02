@@ -1,6 +1,24 @@
 # aws-cloudwatch-subscriptions
 
-From the Terraform module root do `init` and `apply`.
+Create the resources:
+
+```
+terraform init
+terraform apply
+```
+
+Sent static sample logs to the stream:
+
+```
+aws logs put-log-events --log-group-name prod-logs --log-stream-name trunk --log-events file://events.json
+```
+
+Send dynamic timestamped logs:
+
+```
+bash put-log-events.sh INFO
+bash put-log-events.sh ERROR
+```
 
 ## Logging from EC2
 

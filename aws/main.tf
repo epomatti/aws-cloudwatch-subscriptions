@@ -83,11 +83,10 @@ resource "aws_iam_instance_profile" "main" {
 }
 
 module "ec2_instance" {
-  source        = "terraform-aws-modules/ec2-instance/aws"
-  name          = "prod-instance"
-  instance_type = "t2.micro"
-  # key_name               = "prod-user"
-  # user_data                   = file("${path.module}/cloud-init.sh")
+  source                      = "terraform-aws-modules/ec2-instance/aws"
+  name                        = "prod-instance"
+  instance_type               = "t2.micro"
+  user_data                   = file("${path.module}/cloud-init.sh")
   ami                         = "ami-03f38e546e3dc59e1"
   monitoring                  = true
   associate_public_ip_address = true
@@ -100,6 +99,11 @@ module "ec2_instance" {
 
 resource "aws_cloudwatch_log_group" "main" {
   name = "prod-logs"
+}
+
+resource "aws_cloudwatch_log_stream" "main" {
+  name           = "trunk"
+  log_group_name = aws_cloudwatch_log_group.main.name
 }
 
 # resource "aws_cloudwatch_log_subscription_filter" "test_lambdafunction_logfilter" {
