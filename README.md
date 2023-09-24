@@ -2,7 +2,7 @@
 
 CloudWatch Logs subscription filters with Kinesis and several destinations.
 
-<img src=".assets/aws.png" width=800 />
+<img src=".assets/cw-kinesis.png" width=800 />
 
 Create the resources:
 
