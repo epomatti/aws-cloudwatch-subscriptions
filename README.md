@@ -6,24 +6,24 @@ CloudWatch Logs subscription filters with Kinesis and several destinations.
 
 Create the resources:
 
-```
+```sh
 terraform init
-terraform apply
+terraform apply -auto-approve
 ```
 
 To complete the OpenSearch Serverless setup, connect and create a public Access Policy via the [Console](https://us-east-2.console.aws.amazon.com/aos/home?region=us-east-2#opensearch/collections/prod-logs). (This seems not available via Terraform as of now)
 
 Sent static sample logs to the stream:
 
-```
+```sh
 aws logs put-log-events --log-group-name prod-logs --log-stream-name trunk --log-events file://events.json
 ```
 
 Send dynamic timestamped logs:
 
-```
-bash put-log-events.sh INFO
-bash put-log-events.sh ERROR
+```sh
+bash putLogEvents.sh INFO
+bash putLogEvents.sh ERROR
 ```
 
 To subscribe only to specific logging patterns, edit the filter pattern:
@@ -38,14 +38,14 @@ The `amazon-cloudwatch-agent` package will be installed via user data.
 
 Log into the EC2 instance and configure the CloudWatch agent with the wizard:
 
-```
+```sh
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-config-wizard
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/opt/aws/amazon-cloudwatch-agent/bin/config.json
 ```
 
 Download the Go app binary:
 
-```
+```sh
 curl -L https://github.com/epomatti/aws-cloudwatch-subscriptions/releases/download/v0.0.1/main.so -o main.so
 ```
 
@@ -55,14 +55,14 @@ Start the app and call the `/info` and `/err` endpoints fro simulating log sync 
 
 From the logging app root:
 
-```
+```sh
 go get
 go run .
 ```
 
 Testing the outputs:
 
-```
+```sh
 curl localhost:8080/info
 curl localhost:8080/err
 ```
