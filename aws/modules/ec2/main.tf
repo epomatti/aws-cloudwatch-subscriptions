@@ -1,6 +1,6 @@
 resource "aws_iam_instance_profile" "main" {
-  name = "EC2TestProfile"
-  role = aws_iam_role.main.arn
+  name = "ProdEC2TestProfile"
+  role = aws_iam_role.main.name
 }
 
 module "ec2_instance" {
