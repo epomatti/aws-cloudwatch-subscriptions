@@ -13,7 +13,7 @@ terraform apply -auto-approve
 
 To complete the OpenSearch Serverless setup, connect and create a public Access Policy via the [Console](https://us-east-2.console.aws.amazon.com/aos/home?region=us-east-2#opensearch/collections/prod-logs). (This seems not available via Terraform as of now)
 
-Sent static sample logs to the stream:
+Send static sample logs to the stream:
 
 ```sh
 aws logs put-log-events --log-group-name prod-logs --log-stream-name trunk --log-events file://events.json
@@ -31,6 +31,16 @@ To subscribe only to specific logging patterns, edit the filter pattern:
 ```terraform
 subscription_filter_pattern = ""
 ```
+
+💡 Additional **production** Firehose configurations that are available:
+
+- Data transformation (via Lambda)
+- Record format conversion (Parquet, ORC)
+- Bucket error prefix
+- Dynamic partitioning
+- Backup
+- Server-side encryption (SSE)
+- Destination error logs (CloudWatch)
 
 ## Logging from EC2
 
