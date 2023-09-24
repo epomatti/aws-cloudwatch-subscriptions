@@ -28,7 +28,8 @@ resource "aws_cloudwatch_log_subscription_filter" "firehose_datalake" {
   destination_arn = var.firehose_datalake_arn
 
   depends_on = [
-    aws_iam_role_policy_attachment.kinesis
+    aws_iam_role_policy_attachment.kinesis,
+    aws_iam_policy.kinesis
   ]
 }
 
@@ -63,6 +64,14 @@ resource "aws_iam_policy" "kinesis" {
         ]
         Effect   = "Allow"
         Resource = "${var.kinesis_stream_arn}"
+      },
+      {
+        Sid = "KinesisFirehose"
+        Action = [
+          "firehose:PutRecord"
+        ]
+        Effect   = "Allow"
+        Resource = "${var.firehose_datalake_arn}"
       }
     ]
   })
