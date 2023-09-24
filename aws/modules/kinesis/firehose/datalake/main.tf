@@ -1,5 +1,5 @@
-resource "aws_kinesis_firehose_delivery_stream" "opensearch_serverless" {
-  name        = "PUT-S3-VDf8ADf"
+resource "aws_kinesis_firehose_delivery_stream" "s3" {
+  name        = "PUT-S3-LAKE"
   destination = "extended_s3"
 
   extended_s3_configuration {

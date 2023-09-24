@@ -20,6 +20,18 @@ resource "aws_cloudwatch_log_subscription_filter" "prod_kinesis_logfilter" {
   ]
 }
 
+resource "aws_cloudwatch_log_subscription_filter" "firehose_datalake" {
+  name            = "firehose-lake-s3"
+  role_arn        = aws_iam_role.main.arn
+  log_group_name  = aws_cloudwatch_log_group.main.name
+  filter_pattern  = var.subscription_filter_pattern
+  destination_arn = var.firehose_datalake_arn
+
+  depends_on = [
+    aws_iam_role_policy_attachment.kinesis
+  ]
+}
+
 resource "aws_iam_role" "main" {
   name = "CustomLogReplication"
 
@@ -45,7 +57,7 @@ resource "aws_iam_policy" "kinesis" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid = "Kinesis Stream"
+        Sid = "KinesisStream"
         Action = [
           "kinesis:PutRecord"
         ]

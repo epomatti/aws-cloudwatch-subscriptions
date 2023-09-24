@@ -5,3 +5,7 @@ variable "kinesis_stream_arn" {
 variable "subscription_filter_pattern" {
   type = string
 }
+
+variable "firehose_datalake_arn" {
+  type = string
+}

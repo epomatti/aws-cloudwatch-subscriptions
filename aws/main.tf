@@ -48,4 +48,5 @@ module "cloudwatch" {
   source                      = "./modules/cloudwatch"
   kinesis_stream_arn          = module.kinesis_stream.kinesis_stream_arn
   subscription_filter_pattern = var.subscription_filter_pattern
+  firehose_datalake_arn       = module.firehose_datalake.firehose_arn
 }
