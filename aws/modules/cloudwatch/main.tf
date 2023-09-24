@@ -39,18 +39,19 @@ resource "aws_iam_role" "main" {
 }
 
 resource "aws_iam_policy" "kinesis" {
-  name = "prod-sub-kinesis-cwl"
+  name = "CustomCloudWatchPermissions"
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
+        Sid = "Kinesis Stream"
         Action = [
-          "kinesis:PutRecord",
+          "kinesis:PutRecord"
         ]
         Effect   = "Allow"
         Resource = "${var.kinesis_stream_arn}"
-      },
+      }
     ]
   })
 }

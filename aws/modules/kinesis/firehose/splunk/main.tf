@@ -28,21 +28,3 @@
 #   #   }
 #   # }
 # }
-
-resource "aws_iam_role" "firehose" {
-  name = "prod-firehose-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid    = "AllowFirehose"
-        Effect = "Allow"
-        Action = "sts:AssumeRole"
-        Principal = {
-          Service = "firehose.amazonaws.com"
-        }
-      }
-    ]
-  })
-}

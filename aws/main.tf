@@ -31,12 +31,21 @@ module "ec2" {
   subnet_id = module.vpc.public_subnets[0]
 }
 
-module "kinesis" {
+module "s3_lake" {
+  source = "./modules/s3"
+}
+
+module "firehose_datalake" {
+  source     = "./modules/kinesis/firehose/datalake"
+  bucket_arn = module.s3_lake.bucket_arn
+}
+
+module "kinesis_stream" {
   source = "./modules/kinesis/stream"
 }
 
 module "cloudwatch" {
   source                      = "./modules/cloudwatch"
-  kinesis_stream_arn          = module.kinesis.kinesis_stream_arn
+  kinesis_stream_arn          = module.kinesis_stream.kinesis_stream_arn
   subscription_filter_pattern = var.subscription_filter_pattern
 }
