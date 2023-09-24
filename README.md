@@ -32,7 +32,7 @@ To subscribe only to specific logging patterns, edit the filter pattern:
 subscription_filter_pattern = ""
 ```
 
-💡 Additional **production** Firehose configurations that are available:
+💡 Additional Firehose configurations that are available:
 
 - Data transformation (via Lambda)
 - Record format conversion (Parquet, ORC)
