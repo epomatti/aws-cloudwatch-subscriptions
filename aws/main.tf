@@ -25,11 +25,18 @@ module "vpc" {
   public_subnets = ["10.0.101.0/24"]
 }
 
+module "ssm" {
+  source                   = "./modules/ssm"
+  cwagent_config_file_name = var.cwagent_config_file_name
+}
+
 module "ec2" {
   source        = "./modules/ec2"
   vpc_id        = module.vpc.vpc_id
   subnet_id     = module.vpc.public_subnets[0]
   instance_type = var.ec2_instance_type
+
+  depends_on = [module.ssm]
 }
 
 module "s3_lake" {

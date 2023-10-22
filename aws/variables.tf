@@ -3,6 +3,11 @@ variable "aws_region" {
   default = "us-east-2"
 }
 
+variable "cwagent_config_file_name" {
+  type    = string
+  default = "config-root-only-1s.json"
+}
+
 variable "ec2_instance_type" {
   type    = string
   default = "t4g.nano"

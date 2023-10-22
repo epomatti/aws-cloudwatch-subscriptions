@@ -65,6 +65,11 @@ resource "aws_iam_role_policy_attachment" "ssm-managed-instance-core" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+resource "aws_iam_role_policy_attachment" "AmazonSSMReadOnlyAccess" {
+  role       = aws_iam_role.main.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
+}
+
 resource "aws_iam_role_policy_attachment" "cloudwatc-agent-server-policy" {
   role       = aws_iam_role.main.name
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
