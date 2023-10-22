@@ -3,17 +3,41 @@ resource "aws_iam_instance_profile" "main" {
   role = aws_iam_role.main.name
 }
 
-module "ec2_instance" {
-  source                      = "terraform-aws-modules/ec2-instance/aws"
-  name                        = "prod-instance"
-  instance_type               = "t4g.micro"
-  user_data                   = file("${path.module}/cloud-init.sh")
-  ami                         = "ami-08fdd91d87f63bb09"
-  monitoring                  = true
+resource "aws_instance" "default" {
+  ami           = "ami-05983a09f7dc1c18f"
+  instance_type = var.instance_type
+
   associate_public_ip_address = true
-  vpc_security_group_ids      = [aws_security_group.main.id]
   subnet_id                   = var.subnet_id
-  iam_instance_profile        = aws_iam_instance_profile.main.id
+  vpc_security_group_ids      = [aws_security_group.main.id]
+
+  iam_instance_profile = aws_iam_instance_profile.main.id
+  user_data            = file("${path.module}/userdata.sh")
+
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }
+
+  monitoring    = true
+  ebs_optimized = true
+
+  root_block_device {
+    encrypted   = true
+    volume_type = "gp3"
+    volume_size = 8
+  }
+
+  lifecycle {
+    ignore_changes = [
+      ami,
+      user_data
+    ]
+  }
+
+  tags = {
+    Name = "prod-machine"
+  }
 }
 
 ### IAM ###

@@ -7,8 +7,8 @@ CloudWatch Logs subscription filters with Kinesis and several destinations.
 Create the resources:
 
 ```sh
-terraform init
-terraform apply -auto-approve
+terraform -chdir="aws" init
+terraform -chdir="aws" apply -auto-approve
 ```
 
 To complete the OpenSearch Serverless setup, connect and create a public Access Policy via the [Console](https://us-east-2.console.aws.amazon.com/aos/home?region=us-east-2#opensearch/collections/prod-logs). (This seems not available via Terraform as of now)

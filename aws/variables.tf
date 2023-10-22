@@ -3,6 +3,11 @@ variable "aws_region" {
   default = "us-east-2"
 }
 
+variable "ec2_instance_type" {
+  type    = string
+  default = "t4g.nano"
+}
+
 variable "subscription_filter_pattern" {
   type    = string
   default = ""
