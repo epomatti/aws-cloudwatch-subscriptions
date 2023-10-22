@@ -39,6 +39,11 @@ module "ec2" {
   depends_on = [module.ssm]
 }
 
+module "alarms" {
+  source      = "./modules/alarms"
+  instance_id = module.ec2.instance_id
+}
+
 module "s3_lake" {
   source = "./modules/s3"
 }
